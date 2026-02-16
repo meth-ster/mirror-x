@@ -130,7 +130,15 @@ def get_user_by_id(user_id):
     user = cursor.fetchone()
     conn.close()
     
-    return user
+    if user:
+        return {
+            'id': user[0],
+            'username': user[1],
+            'email': user[2],
+            'password_hash': user[3],
+            'created_at': user[4]
+        }
+    return None
 
 def save_study_session(user_id, subject, hours, difficulty):
     """Save a study session for a user"""

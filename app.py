@@ -422,6 +422,9 @@ def index():
         return redirect(url_for('login'))
     
     current_user = get_current_user()
+    if not current_user:
+        return redirect(url_for('login'))
+    
     sessions_data = get_user_study_sessions(current_user['id'])
     
     if not sessions_data:
