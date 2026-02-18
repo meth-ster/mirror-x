@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MIRROR-X - Study Intelligence System{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles that should always be present */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        
+        /* Flash messages */
+        .flash-messages {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+        
+        .flash-message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .flash-message.success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .flash-message.error {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .flash-message.warning {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .flash-message.info {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="logo-icon">🪞</span>
+                <span class="logo-text">MIRROR-X</span>
+            </div>
+            
+            <div class="nav-links">
+                <a href="/" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/log" class="nav-link {% if request.endpoint == 'log' %}active{% endif %}">
+                    <span class="nav-icon">📝</span>
+                    <span>Log Study</span>
+                </a>
+                <a href="/analysis" class="nav-link {% if request.endpoint == 'analysis' %}active{% endif %}">
+                    <span class="nav-icon">📈</span>
+                    <span>Analysis</span>
+                </a>
+                <a href="/report" class="nav-link {% if request.endpoint == 'report' %}active{% endif %}">
+                    <span class="nav-icon">🔍</span>
+                    <span>Report</span>
+                </a>
+                <a href="/chat" class="nav-link {% if request.endpoint == 'chat' %}active{% endif %}">
+                    <span class="nav-icon">💬</span>
+                    <span>AI Chat</span>
+                </a>
+                <a href="/leaderboard" class="nav-link {% if request.endpoint == 'leaderboard' %}active{% endif %}">
+                    <span class="nav-icon">🏆</span>
+                    <span>Leaderboard</span>
+                </a>
+                <a href="/transformation" class="nav-link {% if request.endpoint == 'transformation' %}active{% endif %}">
+                    <span class="nav-icon">⚡</span>
+                    <span>Transformation</span>
+                </a>
+            </div>
+            
+            <div class="nav-actions">
+                {% if user %}
+                    <div class="user-menu">
+                        <span class="user-name">{{ user.username }}</span>
+                        <a href="/logout" class="logout-btn">Logout</a>
+                    </div>
+                {% else %}
+                    <a href="/login" class="login-btn">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2024 MIRROR-X. Study Intelligence System.</p>
+        </div>
+    </footer>
+</body>
+</html>
