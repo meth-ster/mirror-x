@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash, make_response
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash, make_response, g
 import pandas as pd
 import json
 import os
@@ -9,12 +9,27 @@ from auth import login_required, get_current_user, is_logged_in
 app = Flask(__name__)
 app.secret_key = 'mirror-x-secret-key-change-in-production'
 
+# Configure session for production
+app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+
 # Initialize database
 init_database()
 
 # Import existing modules
 from data import get_available_subjects
 from analysis import analyze_study_data, detect_behavioral_patterns, get_recent_data, calculate_streak
+
+@app.before_request
+def load_logged_in_user():
+    user_id = session.get('user_id')
+    
+    if user_id is None:
+        g.user = None
+    else:
+        # fetch user from database
+        g.user = get_user_by_id(user_id)
 
 @app.context_processor
 def inject_now():
@@ -418,13 +433,10 @@ import base64
 
 @app.route('/')
 def index():
-    if not is_logged_in():
+    if not g.user:
         return redirect(url_for('login'))
     
-    current_user = get_current_user()
-    if not current_user:
-        return redirect(url_for('login'))
-    
+    current_user = g.user
     sessions_data = get_user_study_sessions(current_user['id'])
     
     if not sessions_data:
@@ -522,8 +534,10 @@ def login():
         
         user = authenticate_user(username, password)
         if user:
+            session.clear()  # Clear any existing session data
             session['user_id'] = user['id']
             session['username'] = user['username']
+            print(f"Session after login: {dict(session)}")  # Debug print
             flash('Welcome back!', 'success')
             return redirect(url_for('index'))
         else:
