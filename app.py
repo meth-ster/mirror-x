@@ -440,7 +440,8 @@ def index():
     sessions_data = get_user_study_sessions(current_user['id'])
     
     if not sessions_data:
-        return render_template('index.html', has_data=False, user=current_user, streak_data={'current_streak': 0, 'longest_streak': 0}, failure_alert=None, top_one_percent=False)
+        current_date = datetime.now().strftime("%B %d, %Y")
+        return render_template('index.html', current_date=current_date, has_data=False, user=current_user, streak_data={'current_streak': 0, 'longest_streak': 0}, failure_alert=None, top_one_percent=False)
     
     df = pd.DataFrame(sessions_data)
     result = analyze_behavior(df)
@@ -467,6 +468,9 @@ def index():
     # Check for top 1% mode
     top_one_percent = check_top_one_percent(scores, analysis)
     
+    current_date = datetime.now().strftime("%B %d, %Y")
+    return render_template('index.html', current_date=current_date, has_data=True, user=current_user, streak_data=streak_data, failure_alert=failure_alert, top_one_percent=top_one_percent)
+
     # Calculate performance grade
     avg_score = (scores['reality_score'] + scores['discipline_score'] + (100 - scores['avoidance_score'])) / 3
     if avg_score >= 85:
