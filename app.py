@@ -3,7 +3,7 @@ import pandas as pd
 import json
 import os
 from datetime import datetime, timedelta, date
-from database import init_database, create_user, authenticate_user, save_study_session, get_user_study_sessions, save_score_history, get_user_score_history, get_leaderboard_data, update_user_scores, get_user_streak, update_streak
+from database import init_database, create_user, authenticate_user, save_study_session, get_user_study_sessions, save_score_history, get_user_score_history, get_leaderboard_data, update_user_scores, get_user_streak, update_streak, get_user_by_id
 from auth import login_required, get_current_user, is_logged_in
 
 app = Flask(__name__)
